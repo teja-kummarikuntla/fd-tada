@@ -56,20 +56,22 @@ function dispVouchers() {
     let vou = [];
     keysArr.forEach((element) => {
       vou.push(`<div class="lookup">
-      <label class="tada-app-label text--xsmall lookup-body">Voucher Subject</label>
+      <label class="tada-app-label text--xsmall lookup-body"><b> Voucher Subject </b></label>
       <p class="lookup-body">${dbData[element].subject}</p>
-      <label class="tada-app-label text--xsmall lookup-body">Voucher Descriptioon </label>
+      <label class="tada-app-label text--xsmall lookup-body"><b>Voucher Descriptioon </b></label>
       <p class="lookup-body">${dbData[element].description}</p>
-      <label class="tada-app-label text--xsmall lookup-body">Discount(%)</label>
+      <label class="tada-app-label text--xsmall lookup-body"><b> Discount(%) </b></label>
       <p class="lookup-body">${dbData[element].discount}</p>
-      <label class="tada-app-label text--xsmall lookup-body">Vouchere Code</label>
+      <label class="tada-app-label text--xsmall lookup-body"><b>Validity</b></label>
+      <p class="lookup-body">${dbData[element].validity}</p>
+      <label class="tada-app-label text--xsmall lookup-body"><b> Vouchere Code </b></label>
       <fw-label class="lookup-body" value="${dbData[element].voucher}" onClick= "pasteInEditor(\'${dbData[element].voucher}'\)" name="pasteInEditor" data-arg1="${dbData[element].voucher}" color="green"></fw-label>
       <fw-icon name="magic-wand" size="12" color="green" onClick= "pasteInEditor(\'${dbData[element].voucher}'\)">
       </fw-icon>
       </div>`);
     });
     document.querySelector("#values").innerHTML = vou.join(
-      ""
+      " "
     );
   }),
     function (error) {
@@ -100,3 +102,24 @@ function onAppActivate() {
 function handleErr(err) {
   console.error(`Error occured. Details:`, err);
 }
+
+window.frsh_init().then(function(client) {
+  window.client = client;
+  // Instance APIs
+  // resize the instance
+
+  // current instance details
+  client.instance.context().then(function(context){
+
+    // receive message from other instances
+    client.instance.receive(function(e){
+      let data = e.helper.getData();
+      console.log(`${context.instance_id}: Received messsage from ${JSON.stringify(data.sender)}: Message: `, data.message);
+
+      pasteInEditor(data.message.code)
+
+    });
+
+    console.log('instance API context', context);
+  });
+});

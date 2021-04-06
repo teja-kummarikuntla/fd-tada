@@ -104,13 +104,32 @@ function addListeners(){
     })
 
     document.getElementById('paste-editor').addEventListener('click', function() {
-      client.interface.trigger(
-        "setValue", {id: "editor", text: "Text to be inserted"})
-        .then(function(data) {
-        // data - success message
-        }).catch(function(error) {
-        // error - error object
-        });
+      
+      window.frsh_init().then(function(client){
+        let result = {
+          code: voucherCode,
+        };
+
+        // Send message to parent
+        client.instance.send({ message: result });
+
+        // Close the instance
+        client.instance.close();
+      });
+
+      // client.interface.trigger(
+      //   "setValue", {id: "editor", text: "Text to be inserted"})
+      //   .then(function(data) {
+      //   // data - success message
+      //   }).catch(function(error) {
+      //   // error - error object
+      //   });
+      // client.instance.send({
+      //   message: {code: voucherCode}
+      // });
+      // console.log("SEMTTTT")
+      /* message can be a string, object, or array */
+      event.preventDefault();
     })
 }
 

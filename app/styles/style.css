@@ -106,8 +106,9 @@ html {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   border: 1px solid #cfd7df;
+  height: 290px;
 }
 
-.lookup-body {
+.lookup-body{
   margin-left: 10px;
 }
