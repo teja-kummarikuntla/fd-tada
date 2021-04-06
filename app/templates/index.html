@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <script src="https://static.freshdev.io/fdk/2.0/assets/fresh_client.js"></script>
+    <link rel="stylesheet" type="text/css" href="../styles/style.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://static.freshdev.io/fdk/2.0/assets/freshdesk.css"
+    />
+    <script
+    type="module"
+    src="https://unpkg.com/@freshworks/crayons/dist/crayons/crayons.esm.js">
+  </script>
+  <script
+    nomodule
+    src="https://unpkg.com/@freshworks/crayons/dist/crayons/crayons.js">
+  </script>
+  <script src="../scripts/util.js"></script> 
+  </head>
+
+  <body>
+    <div class="action-icon" id="create-voucher">
+      <img class="create-vocher-logo" style="vertical-align: middle;"/>
+      <span style="vertical-align: middle;" class="icon-text">Create voucher</span>
+    </div>
+<br>
+    <div class="tada-background">
+      <div class="add-tada-content">
+        <p class="tada-app-label text--xsmall alignment-middle">List generated vocher codes</p>
+      </div>
+      <fw-button id="list-vouchers" class="button-middle" size="small"> vouchers </fw-button>
+    </div>
+  </div>
+  <div id="values"></div>
+
+  </body>
+  <script src="../scripts/app.js"></script>
+
+</html>
