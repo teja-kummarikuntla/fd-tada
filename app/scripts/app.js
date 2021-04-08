@@ -43,6 +43,10 @@ function addListeners() {
     // openListVouchersModal();
     dispVouchers();
   });
+
+  document.getElementById('remove_history').addEventListener('click', function() {
+    deleteVouchers();
+  })
 }
 
 // document.addEventListener('DOMContentLoaded', function() {
@@ -50,6 +54,7 @@ function addListeners() {
 // })
 
 function dispVouchers() {
+  document.getElementById('values').classList.remove('hidden')
   client.db.get("vouchers").then(function (dbData) {
     let keysArr = Object.keys(dbData).reverse();
     keysArr = keysArr.slice(0, 5);
@@ -73,6 +78,11 @@ function dispVouchers() {
     document.querySelector("#values").innerHTML = vou.join(
       " "
     );
+
+    if (keysArr.length > 0) {
+      document.getElementById('remove_history').classList.remove('hidden')
+    }
+
   }),
     function (error) {
       console.error(error);
@@ -87,6 +97,36 @@ function pasteInEditor(value){
     }).catch(function(error) {
       console.log("Error: ", error)
     });
+}
+
+function deleteVouchers() {
+  client.interface
+    .trigger("showConfirm", {
+      title: "Deleting Voucher Data",
+      message: "Are you sure?",
+      saveLabel: "Yes",
+      cancelLabel: "No",
+    })
+    .then(function (result) {
+      if (result.message == "Yes") {
+        client.db.delete("vouchers").then(function () {
+          showNotify(
+            "success",
+            "Success",
+            "Convension History removed succesfully"
+          );
+        }),
+          function (error) {
+            console.log(error);
+          };
+          document.getElementById('remove_history').classList.add('hidden')
+          document.getElementById('values').classList.add('hidden')
+
+      }
+    }),
+    function (error) {
+      console.log(error);
+    };
 }
 
 function onAppActivate() {
