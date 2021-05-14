@@ -1,4 +1,4 @@
-## Your First App
+## Your First App 
 
 This app displays the name of the requester of a freshdesk ticket in the ticket_sidebar placeholder
 
