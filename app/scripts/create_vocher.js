@@ -1,142 +1,148 @@
-const DANGER_NOTIFICATION = 'danger';
-const SUCCESS_NOTIFICATION = 'success';
-const FIELDS_TO_VALIDATE = ['subject', 'description', 'discount', 'validity'];
+const DANGER_NOTIFICATION = "danger";
+const SUCCESS_NOTIFICATION = "success";
+const FIELDS_TO_VALIDATE = ["subject", "description", "discount", "validity"];
 
+/* Fetch data from the form fields */
 function getFieldValues() {
-    return {
-      subject: document.getElementById('voucher-subject').value,
-      description: document.getElementById('voucher-description').value,
-      discount: Number(document.getElementById('voucher-discount').value),
-      validity: document.getElementById('voucher-validity').value
-    };
-  }
+  return {
+    subject: document.getElementById("voucher-subject").value,
+    description: document.getElementById("voucher-description").value,
+    discount: Number(document.getElementById("voucher-discount").value),
+    validity: document.getElementById("voucher-validity").value,
+  };
+}
 
+/* Reset from fields */
 function clearFields() {
-  document.getElementById('voucher-subject').value = ""
-  document.getElementById('voucher-description').value = ""
-  document.getElementById('voucher-discount').value = ""
-  document.getElementById('voucher-validity').value = ""
-  document.getElementById('custom-voucher').value = ""
+  document.getElementById("voucher-subject").value = "";
+  document.getElementById("voucher-description").value = "";
+  document.getElementById("voucher-discount").value = "";
+  document.getElementById("voucher-validity").value = "";
+  document.getElementById("custom-voucher").value = "";
 
-  var errorPrompts = document.getElementsByClassName('validation-message');
-  for(var i=0; i< errorPrompts.length; i++){
+  var errorPrompts = document.getElementsByClassName("validation-message");
+  for (var i = 0; i < errorPrompts.length; i++) {
     errorPrompts[i].innerText = "";
   }
 }
 
-function validateFields() {
-    document.querySelectorAll('.validation-message').innerHTML = '';
-    var voucherData = getFieldValues();
-    var isValid = true;
-  
-    for (var field of FIELDS_TO_VALIDATE) {
-      if (!voucherData[field]) {
-        document.getElementById(`${field}-error`).innerHTML = 'Please fill this required field';
-        isValid = false;
-      }
-       else {
-        document.getElementById(`${field}-error`).innerText = ""
-      }
-    }
-    return isValid;
-}
-
+/**
+ * Save generated voucher code in Database
+ * @param {string} subject - Voucher code subject
+ * @param {string} description - Voucher code description
+ * @param {number} discount - Discount value in percentage
+ * @param {string} validity - Voucher code time period in data scale
+ * @param {string} voucher - generated voucher code
+ */
 function saveVoucherToDb(subject, description, discount, validity, voucher) {
   let createObject = new Object();
   let id = generateUuid();
-  createObject[`voucher_${id}`] = {subject, description, discount, validity, voucher};
-  client.db.update("vouchers", "set", createObject), function(error) {
-    console.log(error);
-  }
+  createObject[`voucher_${id}`] = {
+    subject,
+    description,
+    discount,
+    validity,
+    voucher,
+  };
+  client.db.update("vouchers", "set", createObject),
+    function (error) {
+      console.error(error);
+    };
 }
 
-function addListeners(){
-    var voucherCode = ""
-    document.getElementById("vocher-toggle").addEventListener('fwChange', function(){
-        displayValue = document.getElementById("custom-voucher").style.display
-        if (displayValue == 'block'){
-        document.getElementById("custom-voucher").style.display = "none"
-        } else {
-            document.getElementById("custom-voucher").style.display = "block"
-        }
-    })
+/* Element event listeners */
+function addListeners() {
+  var voucherCode = [];
+  document
+    .getElementById("voucher-toggle")
+    .addEventListener("fwChange", function () {
+      let displayValue =
+        document.getElementById("custom-voucher").style.display;
+      if (displayValue == "block") {
+        document.getElementById("custom-voucher").style.display = "none";
+      } else {
+        document.getElementById("custom-voucher").style.display = "block";
+      }
+    });
 
-    document.getElementById('create-voucher').addEventListener('click', function(){
-      if(validateFields()){
-        var vSubject = document.getElementById('voucher-subject').value
-        var vDescription = document.getElementById('voucher-description').value
-        var vDiscount = Number(document.getElementById('voucher-discount').value)
-        var vValidity = document.getElementById('voucher-validity').value
-        var vCustomVoucher = document.getElementById('custom-voucher').value
-        if(vCustomVoucher != ""){
-          voucherCode = vCustomVoucher
-          document.getElementById('voucher-label').innerText = voucherCode
-          saveVoucherToDb(vSubject, vDescription, vDiscount, vValidity, voucherCode);
-          client.db.get("vouchers").then(function (dbData) {
-            console.log(dbData)
-          }) 
+  document
+    .getElementById("create-voucher")
+    .addEventListener("click", function () {
+      if (validateFields()) {
+        let vSubject = document.getElementById("voucher-subject").value;
+        let vDescription = document.getElementById("voucher-description").value;
+        let vDiscount = Number(
+          document.getElementById("voucher-discount").value
+        );
+        let vValidity = document.getElementById("voucher-validity").value;
+        let vCustomVoucher = document.getElementById("custom-voucher").value;
+        if (vCustomVoucher != "") {
+          voucherCode.push(vCustomVoucher);
+          document.getElementById("voucher-label").innerText = voucherCode[0];
+          saveVoucherToDb(
+            vSubject,
+            vDescription,
+            vDiscount,
+            vValidity,
+            voucherCode[0]
+          );
         } else {
-        client.request.invoke('generateVoucher', {}).then(
-            function(data) {
-              voucherCode = data.response[0]
-              document.getElementById('voucher-label').innerText = voucherCode
-              saveVoucherToDb(vSubject, vDescription, vDiscount, vValidity, voucherCode);
-              client.db.get("vouchers").then(function (dbData) {
-                console.log(dbData)
-              })
+          client.request.invoke("generateVoucher", {}).then(
+            function (data) {
+              voucherCode.push(data.response[0]);
+              document.getElementById("voucher-label").innerText = voucherCode[0];
+              saveVoucherToDb(
+                vSubject,
+                vDescription,
+                vDiscount,
+                vValidity,
+                voucherCode[0]
+              );
             },
-            function(err) {
-              console.log("Request ID: " + err.requestID);
-              console.log("error status: " + err.status);
-              console.log("error message: " + err.message);
-            });
-          }
+            function (err) {
+              console.error("Request ID: " + err.requestID);
+              console.error("error status: " + err.status);
+              console.error("error message: " + err.message);
+            }
+          );
+        }
 
-            document.getElementById('voucher-component').classList.remove('hidden')
-            clearFields();
-          }
-    })
+        document.getElementById("voucher-component").classList.remove("hidden");
+        clearFields();
+      }
+    });
 
-    document.getElementById('copy-button').addEventListener('click', function() {
-      copyToClipboard(voucherCode)
-      sendNotification(SUCCESS_NOTIFICATION, 'Copied to Clipboard');
-      client.instance.close();
-    })
+  document.getElementById("copy-button").addEventListener("click", function () {
+    copyToClipboard(voucherCode[0]);
+    sendNotification(SUCCESS_NOTIFICATION, "Copied to Clipboard");
+    client.instance.close();
+  });
 
-    document.getElementById('paste-editor').addEventListener('click', function() {
-      
-      window.frsh_init().then(function(client){
+  document
+    .getElementById("paste-editor")
+    .addEventListener("click", function () {
+      pasteInEditor(voucherCode[0]);
+      window.frsh_init().then(function (client) {
         let result = {
-          code: voucherCode,
+          code: voucherCode[0],
         };
-
-        // Send message to parent
         client.instance.send({ message: result });
-
-        // Close the instance
         client.instance.close();
-      });
-
-      // client.interface.trigger(
-      //   "setValue", {id: "editor", text: "Text to be inserted"})
-      //   .then(function(data) {
-      //   // data - success message
-      //   }).catch(function(error) {
-      //   // error - error object
-      //   });
-      // client.instance.send({
-      //   message: {code: voucherCode}
-      // });
-      // console.log("SEMTTTT")
-      /* message can be a string, object, or array */
+      }),
+        function (error) {
+          console.error(error);
+        };
       event.preventDefault();
-    })
+    });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    addListeners();
+document.addEventListener("DOMContentLoaded", function () {
+  addListeners();
 
-    app.initialized().then(function(_client) {
-        window.client = _client;
-    })
+  app.initialized().then(function (_client) {
+    window.client = _client;
+  }),
+    function (error) {
+      console.error(error);
+    };
 });

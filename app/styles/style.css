@@ -29,14 +29,15 @@ html {
   color: #475867;
 }
 
-.alignment-middle{
+.alignment-middle {
   text-align: center;
 }
 
-.button-middle, .align-middle {
+.button-middle,
+.align-middle {
   width: 40%;
   margin-left: 30%;
-  margin-right: 30%
+  margin-right: 30%;
 }
 
 .text--xsmall {
@@ -67,7 +68,7 @@ html {
   grid-column: 2/3;
 }
 
-.img-size{
+.img-size {
   height: 50px;
   width: auto;
 }
@@ -79,7 +80,7 @@ html {
 }
 
 .create-vocher-logo {
-  content: url('../styles/images/vocher-icon.png');
+  content: url("../styles/images/vocher-icon.png");
   height: 23%;
 }
 
@@ -94,7 +95,8 @@ html {
   width: 40%;
 }
 
-.col-xs-2, .col-xs-5 {
+.col-xs-2,
+.col-xs-5 {
   position: relative;
   min-height: 1px;
   padding-left: 10px;
@@ -109,6 +111,6 @@ html {
   height: 22em;
 }
 
-.lookup-body{
+.lookup-body {
   margin-left: 10px;
 }

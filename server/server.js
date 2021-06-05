@@ -1,17 +1,11 @@
-const voucherCodeGenerator = require('voucher-code-generator');
+const voucherCodeGenerator = require("voucher-code-generator");
 
 exports = {
-
-  generateVoucher: function(args){
+  generateVoucher: function () {
     let voucher = voucherCodeGenerator.generate({
       length: 8,
-      count: 1
-  });
-  renderData(null, voucher);
-  }
-  
+      count: 1,
+    });
+    renderData(null, voucher);
+  },
 };
-/**
- * UI -> Button
- * Usecase - clicked -> smi -(invoke a function in server.js) -> randomecode -(renderData();)-> UI -> button -(client.interface.something) -> editor
- */

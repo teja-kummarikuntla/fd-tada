@@ -1,10 +1,10 @@
-const DANGER_NOTIFICATION = 'danger';
-const SUCCESS_NOTIFICATION = 'success';
+const DANGER_NOTIFICATION = "danger";
+const SUCCESS_NOTIFICATION = "success";
 
 document.onreadystatechange = function () {
   addListeners();
-  
-  if (document.readyState === 'interactive') renderApp();
+
+  if (document.readyState === "interactive") renderApp();
 
   function renderApp() {
     var onInit = app.initialized();
@@ -13,48 +13,36 @@ document.onreadystatechange = function () {
 
     function getClient(_client) {
       window.client = _client;
-      client.events.on('app.activated', onAppActivate);
+      client.events.on("app.activated", onAppActivate);
     }
   }
 };
-
-function openCreateVocherModal(title, modalData) {
-  client.interface.trigger('showModal', {
-    title: title,
-    template: 'create_vocher.html',
-    data: modalData || {}
-  });
-}
-
-function openListVouchersModal() {
-  client.interface.trigger('showModal', {
-    title: 'List of vouchers created',
-    template: 'list_vouchers.html'
-  });
-}
+/* Element event listeners */
 function addListeners() {
-  document.getElementById('create-voucher').addEventListener('click', function() {
-    openCreateVocherModal('Create Vocuher', {
-      newVocher: true
+  document
+    .getElementById("create-voucher")
+    .addEventListener("click", function () {
+      openCreateVoucherModal("Create Voucher", {
+        newVoucher: true,
+      });
     });
-  });
 
-  document.getElementById('list-vouchers').addEventListener('click', function() {
-    // openListVouchersModal();
-    dispVouchers();
-  });
+  document
+    .getElementById("list-vouchers")
+    .addEventListener("click", function () {
+      dispVouchers();
+    });
 
-  document.getElementById('remove_history').addEventListener('click', function() {
-    deleteVouchers();
-  })
+  document
+    .getElementById("remove_history")
+    .addEventListener("click", function () {
+      deleteVouchers();
+    });
 }
 
-// document.addEventListener('DOMContentLoaded', function() {
-//   addListeners();
-// })
-
+/* Display latest 5 voucher codes */
 function dispVouchers() {
-  document.getElementById('values').classList.remove('hidden')
+  document.getElementById("values").classList.remove("hidden");
   client.db.get("vouchers").then(function (dbData) {
     let keysArr = Object.keys(dbData).reverse();
     keysArr = keysArr.slice(0, 5);
@@ -63,42 +51,30 @@ function dispVouchers() {
       vou.push(`<div class="lookup">
       <label class="tada-app-label text--xsmall lookup-body"><b> Voucher Subject </b></label>
       <p class="lookup-body">${dbData[element].subject}</p>
-      <label class="tada-app-label text--xsmall lookup-body"><b>Voucher Descriptioon </b></label>
+      <label class="tada-app-label text--xsmall lookup-body"><b>Voucher Description </b></label>
       <p class="lookup-body">${dbData[element].description}</p>
       <label class="tada-app-label text--xsmall lookup-body"><b> Discount(%) </b></label>
       <p class="lookup-body">${dbData[element].discount}</p>
       <label class="tada-app-label text--xsmall lookup-body"><b>Validity</b></label>
       <p class="lookup-body">${dbData[element].validity}</p>
-      <label class="tada-app-label text--xsmall lookup-body"><b> Vouchere Code </b></label>
+      <label class="tada-app-label text--xsmall lookup-body"><b> Voucher Code </b></label>
       <fw-label class="lookup-body" value="${dbData[element].voucher}" onClick= "pasteInEditor(\'${dbData[element].voucher}'\)" name="pasteInEditor" data-arg1="${dbData[element].voucher}" color="green"></fw-label>
       <fw-icon name="magic-wand" size="12" color="green" onClick= "pasteInEditor(\'${dbData[element].voucher}'\)">
       </fw-icon>
       </div>`);
     });
-    document.querySelector("#values").innerHTML = vou.join(
-      " "
-    );
+    document.querySelector("#values").innerHTML = vou.join(" ");
 
     if (keysArr.length > 0) {
-      document.getElementById('remove_history').classList.remove('hidden')
+      document.getElementById("remove_history").classList.remove("hidden");
     }
-
   }),
     function (error) {
       console.error(error);
     };
 }
 
-function pasteInEditor(value){
-  client.interface.trigger(
-    "setValue", {id: "editor", text: value})
-    .then(function(data) {
-      showNotify(SUCCESS_NOTIFICATION, "Success:", "Pasted in Editor")
-    }).catch(function(error) {
-      console.log("Error: ", error)
-    });
-}
-
+/* Remove saved voucher codes data from database */
 function deleteVouchers() {
   client.interface
     .trigger("showConfirm", {
@@ -113,15 +89,14 @@ function deleteVouchers() {
           showNotify(
             "success",
             "Success",
-            "Convension History removed succesfully"
+            "Vouchers History removed successfully"
           );
         }),
           function (error) {
             console.log(error);
           };
-          document.getElementById('remove_history').classList.add('hidden')
-          document.getElementById('values').classList.add('hidden')
-
+        document.getElementById("remove_history").classList.add("hidden");
+        document.getElementById("values").innerHTML = "";
       }
     }),
     function (error) {
@@ -130,8 +105,8 @@ function deleteVouchers() {
 }
 
 function onAppActivate() {
-  var textElement = document.getElementById('apptext');
-  var getContact = client.data.get('contact');
+  var textElement = document.getElementById("apptext");
+  var getContact = client.data.get("contact");
   getContact.then(showContact).catch(handleErr);
 
   function showContact(payload) {
@@ -140,26 +115,31 @@ function onAppActivate() {
 }
 
 function handleErr(err) {
-  console.error(`Error occured. Details:`, err);
+  console.error(`Error occurred. Details:`, err);
 }
 
-window.frsh_init().then(function(client) {
+window.frsh_init().then(function (client) {
   window.client = client;
-  // Instance APIs
-  // resize the instance
 
   // current instance details
-  client.instance.context().then(function(context){
-
+  client.instance.context().then(function (context) {
     // receive message from other instances
-    client.instance.receive(function(e){
+    client.instance.receive(function (e) {
       let data = e.helper.getData();
-      console.log(`${context.instance_id}: Received messsage from ${JSON.stringify(data.sender)}: Message: `, data.message);
+      console.log(
+        `${context.instance_id}: Received messuage from ${JSON.stringify(
+          data.sender
+        )}: Message: `,
+        data.message
+      );
 
-      pasteInEditor(data.message.code)
-
+      pasteInEditor(data.message.code);
     });
 
-    console.log('instance API context', context);
-  });
-});
+    console.log("instance API context", context);
+  }), function(error){
+    console.error(error);
+  };
+}), function(error){
+  console.error(error);
+};
